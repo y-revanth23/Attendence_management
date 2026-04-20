@@ -1,0 +1,108 @@
+<div class="dashboard">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-logo">G</div>
+      <h2>GSC Admin</h2>
+    </div>
+    <nav class="side-nav">
+      <!-- Logic to switch views -->
+      <a (click)="setView('dashboard')" [class.active]="currentView === 'dashboard'" style="cursor: pointer;">📊 Dashboard</a>
+      <a (click)="setView('reports')" [class.active]="currentView === 'reports'" style="cursor: pointer;">📅 Reports</a>
+      <a href="#">👥 Students</a>
+      <a href="#">⚙️ Settings</a>
+    </nav>
+  </aside>
+
+  <main class="content">
+    <header class="top-header">
+      <div class="header-left">
+        <h1>GSC ATTENDANCE PORTAL</h1>
+        <div class="date-editor">
+          <label>{{ currentView === 'dashboard' ? 'Attendance Date:' : 'Search Date:' }}</label>
+          <input type="date" [(ngModel)]="uploadDate">
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="search-box">
+          <input type="text" [(ngModel)]="searchQuery" placeholder="Search student names...">
+        </div>
+      </div>
+    </header>
+
+    <div class="grid-container">
+      <!-- Hide this section if currentView is 'reports' -->
+      <section class="card entry-card" *ngIf="currentView === 'dashboard'">
+        <h3>Quick Mark Attendance</h3>
+        <div class="form-grid">
+          <div class="input-group">
+            <input [(ngModel)]="studentName" placeholder="Student Name">
+            <input [(ngModel)]="rollNum" placeholder="Roll Number">
+            <input [(ngModel)]="admNum" placeholder="Admission ID">
+          </div>
+          <div class="input-group">
+            <select [(ngModel)]="selectedDept">
+              <option value="">Select Dept</option>
+              <option *ngFor="let d of departments" [value]="d">{{d}}</option>
+            </select>
+            <select [(ngModel)]="selectedYear">
+              <option value="">Select Year</option>
+              <option value="1st Year">1st Year</option>
+              <option value="2nd Year">2nd Year</option>
+              <option value="3rd Year">3rd Year</option>
+              <option value="4th Year">4th Year</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="status-pills">
+          <button (click)="setStatus('Present')" [class.active-p]="selectedStatus==='Present'">Present</button>
+          <button (click)="setStatus('Absent')" [class.active-a]="selectedStatus==='Absent'">Absent</button>
+          <button (click)="setStatus('OD')" [class.active-o]="selectedStatus==='OD'">OD</button>
+          <button (click)="setStatus('ML')" [class.active-m]="selectedStatus==='ML'">ML</button>
+          <button (click)="setStatus('CL')" [class.active-c]="selectedStatus==='CL'">CL</button>
+        </div>
+
+        <input *ngIf="['CL','OD','ML'].includes(selectedStatus)" [(ngModel)]="reason" 
+               class="reason-input" placeholder="Type reason for leave/duty...">
+
+        <button (click)="addStudent()" class="main-submit-btn">UPDATE RECORD</button>
+      </section>
+
+      <!-- Department Sections (Visible in both views) -->
+      <div *ngIf="getFilteredDepts().length === 0" class="empty-msg">
+          No records found for {{ uploadDate | date:'dd MMM yyyy' }}.
+      </div>
+
+      <div *ngFor="let dept of getFilteredDepts()" class="dept-wrapper">
+        <div class="dept-title-bar">
+          <h3>{{ dept.name }} Department</h3>
+          <span class="count-tag">{{ dept.total }} Entries</span>
+        </div>
+
+        <div *ngFor="let year of dept.years" class="table-container">
+          <h4 class="year-label">{{ year }}</h4>
+          <table>
+            <thead>
+              <tr>
+                <th>Roll No</th>
+                <th>Name</th>
+                <th>Status</th>
+                <th>Remarks</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let s of getStudents(dept.name, year)">
+                <td>{{ s.roll }}</td>
+                <td class="bold-name">{{ s.name }}</td>
+                <td><span class="status-tag" [attr.data-status]="s.status">{{ s.status }}</span></td>
+                <td>{{ s.reason }}</td>
+                <td class="time-col">{{ s.displayDate }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
