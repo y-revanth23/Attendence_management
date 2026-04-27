@@ -1,0 +1,17 @@
+{
+  "hosting": {
+    "site": "gscattendance",
+    "public": "dist/attendance/browser",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}

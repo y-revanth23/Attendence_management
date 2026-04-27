@@ -16,7 +16,7 @@ export class LoginComponent {
   errorMsg = '';
 
   login() {
-    if (this.username === 'gscattendance' && this.password === 'gsc@2026') {
+    if (this.username === 'gsc' && this.password === 'gsc@2026') {
       localStorage.setItem('auth', 'true');
       window.location.reload();
     } else {
